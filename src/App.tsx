@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import TodosArtigos from './pages/TodosArtigos';
 import ArtigoDetalhe from './pages/ArtigoDetalhe';
@@ -19,6 +20,7 @@ function App() {
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
+      <Footer />
     </>
   );
 }
