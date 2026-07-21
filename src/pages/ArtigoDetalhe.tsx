@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Eye } from 'lucide-react';
+import { ArrowLeft, Clock, Eye, Heart } from 'lucide-react';
 import * as artigoService from '../services/artigoService';
 import type { Artigo } from '../types';
+import { useAuth } from '../contexts/useAuth';
+import { Button } from '../components/ui/button';
 
 export default function ArtigoDetalhe() {
   const { id } = useParams<{ id: string }>();
   const [artigo, setArtigo] = useState<Artigo | null>(null);
   const [carregando, setCarregando] = useState(true);
+  const { usuario } = useAuth();
+  const [curtido, setCurtido] = useState(false);
+  const [totalCurtidas, setTotalCurtidas] = useState(0);
 
   useEffect(() => {
     async function buscarArtigo() {
@@ -15,6 +20,7 @@ export default function ArtigoDetalhe() {
       try {
         const dados = await artigoService.buscarArtigo(Number(id));
         setArtigo(dados);
+        setTotalCurtidas(dados.total_curtidas);
       } catch (erro) {
         console.error('Erro ao buscar artigo:', erro);
       } finally {
@@ -24,6 +30,18 @@ export default function ArtigoDetalhe() {
 
     buscarArtigo();
   }, [id]);
+
+  async function handleCurtir() {
+    if (!usuario || !id) return;
+
+    try {
+      const resultado = await artigoService.alternarCurtida(Number(id));
+      setCurtido(resultado.curtido);
+      setTotalCurtidas(resultado.total_curtidas);
+    } catch (erro) {
+      console.error('Erro ao curtir:', erro);
+    }
+  }
 
   if (carregando) {
     return <p className="max-w-3xl mx-auto px-6 py-12 text-muted-foreground">Carregando...</p>;
@@ -59,6 +77,13 @@ export default function ArtigoDetalhe() {
           <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {artigo.tempo_leitura}min</span>
         )}
         <span className="flex items-center gap-1"><Eye className="w-4 h-4" /> {artigo.visualizacoes} visualizações</span>
+      </div>
+
+      <div className="flex items-center gap-3 mb-6">
+        <Button variant={curtido ? 'default' : 'outline'} size="sm" onClick={handleCurtir} disabled={!usuario}>
+          <Heart className={`w-4 h-4 mr-1 ${curtido ? 'fill-current' : ''}`} /> {totalCurtidas}
+        </Button>
+        {!usuario && <span className="text-xs text-muted-foreground">Faça login para curtir</span>}
       </div>
 
       {urlImagem && (
