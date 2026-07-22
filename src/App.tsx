@@ -12,10 +12,12 @@ import NovoArtigo from './pages/NovoArtigo';
 import EditarArtigo from './pages/EditarArtigo';
 import Configuracoes from './pages/Configuracoes';
 import BotaoFlutuante from './components/BotaoFlutuante';
+import ScrollParaTopo from './components/ScrollParaTopo';
 
 function App() {
   return (
     <>
+      <ScrollParaTopo />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
