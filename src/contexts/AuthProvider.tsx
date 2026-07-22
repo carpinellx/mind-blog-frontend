@@ -36,8 +36,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsuario(null);
   }
 
+  function atualizarUsuarioLocal(dadosUsuario: Usuario) {
+    setUsuario(dadosUsuario);
+  }
+
   return (
-    <AuthContext.Provider value={{ usuario, carregando, entrar, sair }}>
+    <AuthContext.Provider value={{ usuario, carregando, entrar, sair, atualizarUsuarioLocal }}>
       {children}
     </AuthContext.Provider>
   );

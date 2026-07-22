@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import RotaProtegida from './components/RotaProtegida';
 import NovoArtigo from './pages/NovoArtigo';
 import EditarArtigo from './pages/EditarArtigo';
+import Configuracoes from './pages/Configuracoes';
 
 function App() {
   return (
@@ -42,6 +43,14 @@ function App() {
           element={
             <RotaProtegida>
               <EditarArtigo />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="/dashboard/configuracoes"
+          element={
+            <RotaProtegida>
+              <Configuracoes />
             </RotaProtegida>
           }
         />

@@ -6,6 +6,7 @@ export interface AuthContextType {
   carregando: boolean;
   entrar: (email: string, senha: string) => Promise<void>;
   sair: () => void;
+  atualizarUsuarioLocal: (usuario: Usuario) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
