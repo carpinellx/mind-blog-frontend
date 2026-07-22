@@ -84,6 +84,20 @@ export default function Configuracoes() {
 
         {erro && <p className="text-sm text-destructive">{erro}</p>}
 
+        <div className="border-t border-border pt-4">
+          <p className="text-sm font-medium mb-3">Informações da conta</p>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground">Tipo de conta</p>
+              <p>Autor</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Membro desde</p>
+              <p>{usuario && new Date(usuario.criado_em).toLocaleDateString('pt-BR')}</p>
+            </div>
+          </div>
+        </div>
+
         <Button type="submit" disabled={salvando}>
           {salvando ? 'Salvando...' : 'Salvar Alterações'}
         </Button>
