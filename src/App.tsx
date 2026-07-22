@@ -7,6 +7,7 @@ import ArtigoDetalhe from './pages/ArtigoDetalhe';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Dashboard from './pages/Dashboard';
+import RotaProtegida from './components/RotaProtegida';
 
 function App() {
   return (
@@ -18,7 +19,14 @@ function App() {
         <Route path="/artigos/:id" element={<ArtigoDetalhe />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <RotaProtegida>
+              <Dashboard />
+            </RotaProtegida>
+          }
+        />
       </Routes>
       <Footer />
     </>
