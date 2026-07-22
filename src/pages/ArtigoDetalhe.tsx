@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Eye, Heart } from 'lucide-react';
+import { ArrowLeft, Clock, Eye, Heart, MessageCircle, Trash2 } from 'lucide-react';
 import * as artigoService from '../services/artigoService';
-import type { Artigo } from '../types';
-import { useAuth } from '../contexts/useAuth';
+import type { Artigo, Comentario } from '../types';import { useAuth } from '../contexts/useAuth';
 import { Button } from '../components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
+
 
 export default function ArtigoDetalhe() {
   const { id } = useParams<{ id: string }>();
@@ -13,23 +14,30 @@ export default function ArtigoDetalhe() {
   const { usuario } = useAuth();
   const [curtido, setCurtido] = useState(false);
   const [totalCurtidas, setTotalCurtidas] = useState(0);
+  const [comentarios, setComentarios] = useState<Comentario[]>([]);
+  const [novoComentario, setNovoComentario] = useState('');
+  const [enviandoComentario, setEnviandoComentario] = useState(false);
 
-  useEffect(() => {
-    async function buscarArtigo() {
-      if (!id) return;
-      try {
-        const dados = await artigoService.buscarArtigo(Number(id));
-        setArtigo(dados);
-        setTotalCurtidas(dados.total_curtidas);
-      } catch (erro) {
-        console.error('Erro ao buscar artigo:', erro);
-      } finally {
-        setCarregando(false);
-      }
+useEffect(() => {
+  async function buscarDados() {
+    if (!id) return;
+    try {
+      const [dadosArtigo, dadosComentarios] = await Promise.all([
+        artigoService.buscarArtigo(Number(id)),
+        artigoService.listarComentarios(Number(id)),
+      ]);
+      setArtigo(dadosArtigo);
+      setTotalCurtidas(dadosArtigo.total_curtidas);
+      setComentarios(dadosComentarios);
+    } catch (erro) {
+      console.error('Erro ao buscar artigo:', erro);
+    } finally {
+      setCarregando(false);
     }
+  }
 
-    buscarArtigo();
-  }, [id]);
+  buscarDados();
+}, [id]);
 
   async function handleCurtir() {
     if (!usuario || !id) return;
@@ -42,6 +50,36 @@ export default function ArtigoDetalhe() {
       console.error('Erro ao curtir:', erro);
     }
   }
+
+async function handleComentar(e: React.FormEvent) {
+  e.preventDefault();
+  if (!novoComentario.trim() || !id || !usuario) return;
+
+  setEnviandoComentario(true);
+  try {
+    const comentarioCriado = await artigoService.criarComentario(Number(id), novoComentario);
+    const comentarioCompleto: Comentario = {
+      ...comentarioCriado,
+      autor_nome: usuario.nome,
+      autor_foto: usuario.foto_url,
+    };
+    setComentarios([comentarioCompleto, ...comentarios]);
+    setNovoComentario('');
+  } catch (erro) {
+    console.error('Erro ao comentar:', erro);
+  } finally {
+    setEnviandoComentario(false);
+  }
+}
+
+async function handleExcluirComentario(comentarioId: number) {
+  try {
+    await artigoService.excluirComentario(comentarioId);
+    setComentarios(comentarios.filter((c) => c.id !== comentarioId));
+  } catch (erro) {
+    console.error('Erro ao excluir comentário:', erro);
+  }
+}
 
   if (carregando) {
     return <p className="max-w-3xl mx-auto px-6 py-12 text-muted-foreground">Carregando...</p>;
@@ -103,6 +141,62 @@ export default function ArtigoDetalhe() {
           ))}
         </div>
       )}
+
+      <div className="border-t border-border pt-6">
+    <h2 className="font-semibold mb-4 flex items-center gap-2">
+      <MessageCircle className="w-4 h-4" /> {comentarios.length === 1 ? 'Comentário' : 'Comentários'} ({comentarios.length})
+    </h2>
+
+  {usuario ? (
+    <form onSubmit={handleComentar} className="flex flex-col gap-2 mb-6">
+      <textarea
+        className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm min-h-20"
+        placeholder="Escreva um comentário..."
+        value={novoComentario}
+        onChange={(e) => setNovoComentario(e.target.value)}
+      />
+      <Button type="submit" disabled={enviandoComentario} className="self-start">
+        {enviandoComentario ? 'Publicando...' : 'Publicar Comentário'}
+      </Button>
+    </form>
+  ) : (
+    <div className="border border-border rounded-lg p-4 text-center mb-6">
+      <p className="text-sm text-muted-foreground mb-2">Faça login para comentar</p>
+      <Link to="/login">
+        <Button size="sm">Fazer login</Button>
+      </Link>
     </div>
+  )}
+
+    <div className="flex flex-col gap-4">
+      {comentarios.map((comentario) => (
+        <div key={comentario.id} className="flex gap-3">
+          <Avatar className="w-9 h-9">
+            <AvatarImage src={comentario.autor_foto || undefined} alt={comentario.autor_nome} />
+            <AvatarFallback>{comentario.autor_nome[0]}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-sm font-medium">{comentario.autor_nome}</span>
+                <span className="text-xs text-muted-foreground ml-2">
+                  {new Date(comentario.criado_em).toLocaleDateString('pt-BR')}
+                </span>
+              </div>
+              {usuario?.id === comentario.autor_id && (
+                <button onClick={() => handleExcluirComentario(comentario.id)}>
+                  <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+                </button>
+              )}
+            </div>
+            <p className="text-sm mt-1">{comentario.conteudo}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+    </div>
+
+    
   );
 }
