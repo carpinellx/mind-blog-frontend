@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Settings, Plus, Pencil, Trash2, FileText, MessageSquare, Heart, TrendingUp } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +17,7 @@ import { useAuth } from '../contexts/useAuth';
 import * as artigoService from '../services/artigoService';
 import * as dashboardService from '../services/dashboardService';
 import type { Artigo } from '../types';
-import type { Estatisticas } from '../services/dashboardService';
+import type { Estatisticas, AtividadeRecente } from '../services/dashboardService';
 
 export default function Dashboard() {
   const { usuario } = useAuth();
@@ -24,18 +25,21 @@ export default function Dashboard() {
   const [estatisticas, setEstatisticas] = useState<Estatisticas | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [artigoParaExcluir, setArtigoParaExcluir] = useState<number | null>(null);
+  const [atividades, setAtividades] = useState<AtividadeRecente[]>([]);
 
   useEffect(() => {
     async function buscarDados() {
       if (!usuario) return;
       try {
-        const [todosArtigos, dadosEstatisticas] = await Promise.all([
+        const [todosArtigos, dadosEstatisticas, dadosAtividades] = await Promise.all([
           artigoService.listarArtigos(),
           dashboardService.buscarEstatisticas(),
+          dashboardService.buscarAtividadeRecente(),
         ]);
 
         setMeusArtigos(todosArtigos.filter((artigo) => artigo.autor_id === usuario.id));
         setEstatisticas(dadosEstatisticas);
+        setAtividades(dadosAtividades);
       } catch (erro) {
         console.error('Erro ao buscar dados do dashboard:', erro);
       } finally {
@@ -114,34 +118,66 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="border border-border rounded-lg p-4">
-        <h2 className="font-semibold mb-4">Meus Artigos</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 border border-border rounded-lg p-4">
+          <h2 className="font-semibold mb-4">Meus Artigos</h2>
 
-        {meusArtigos.length === 0 ? (
-          <p className="text-muted-foreground text-sm">Você ainda não publicou nenhum artigo.</p>
-        ) : (
-          <div className="flex flex-col divide-y divide-border">
-            {meusArtigos.map((artigo) => (
-              <div key={artigo.id} className="flex items-center justify-between py-4 gap-4">
-                <div className="min-w-0">
-                  <p className="font-medium truncate">{artigo.titulo}</p>
-                  <p className="text-sm text-muted-foreground truncate">{artigo.resumo}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {new Date(artigo.data_publicacao).toLocaleDateString('pt-BR')} · {artigo.total_curtidas} curtidas
-                  </p>
+          {meusArtigos.length === 0 ? (
+            <p className="text-muted-foreground text-sm">Você ainda não publicou nenhum artigo.</p>
+          ) : (
+            <div className="flex flex-col divide-y divide-border">
+              {meusArtigos.map((artigo) => (
+                <div key={artigo.id} className="flex items-center justify-between py-4 gap-4">
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{artigo.titulo}</p>
+                    <p className="text-sm text-muted-foreground truncate">{artigo.resumo}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Date(artigo.data_publicacao).toLocaleDateString('pt-BR')} · {artigo.total_curtidas} curtidas
+                    </p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <Link to={`/dashboard/editar-artigo/${artigo.id}`}>
+                      <Button variant="outline" size="sm"><Pencil className="w-4 h-4 mr-1" /> Editar</Button>
+                    </Link>
+                    <Button variant="destructive" size="sm" onClick={() => setArtigoParaExcluir(artigo.id)}>
+                      <Trash2 className="w-4 h-4 mr-1" /> Excluir
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2 shrink-0">
-                  <Link to={`/dashboard/editar-artigo/${artigo.id}`}>
-                    <Button variant="outline" size="sm"><Pencil className="w-4 h-4 mr-1" /> Editar</Button>
-                  </Link>
-                  <Button variant="destructive" size="sm" onClick={() => setArtigoParaExcluir(artigo.id)}>
-                    <Trash2 className="w-4 h-4 mr-1" /> Excluir
-                  </Button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="border border-border rounded-lg p-4">
+          <h2 className="font-semibold mb-4">Atividade Recente</h2>
+
+          {atividades.length === 0 ? (
+            <p className="text-muted-foreground text-sm">Nenhuma atividade recente.</p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {atividades.map((atividade) => (
+                <div key={atividade.id} className="flex gap-3">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={atividade.autor_foto || undefined} alt={atividade.autor_nome} />
+                    <AvatarFallback>{atividade.autor_nome[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="text-sm">
+                      <span className="font-medium">{atividade.autor_nome}</span> comentou em{' '}
+                      <Link to={`/artigos/${atividade.artigo_id}`} className="text-primary hover:underline">
+                        {atividade.artigo_titulo}
+                      </Link>
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Date(atividade.criado_em).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <AlertDialog open={artigoParaExcluir !== null} onOpenChange={(aberto) => !aberto && setArtigoParaExcluir(null)}>
