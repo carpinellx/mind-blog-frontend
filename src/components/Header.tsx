@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Moon, LayoutDashboard, Settings, LogOut } from 'lucide-react';
+import { Moon, Sun, LayoutDashboard, Settings, LogOut } from 'lucide-react';
+import { useTheme } from '../contexts/useTheme';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
@@ -14,6 +15,7 @@ import { useAuth } from '../contexts/useAuth';
 
 export default function Header() {
   const { usuario, sair } = useAuth();
+  const { tema, alternarTema } = useTheme();
   const navigate = useNavigate();
 
   function handleSair() {
@@ -43,10 +45,10 @@ export default function Header() {
             Artigos
           </Link>
 
-          <button className="text-muted-foreground hover:text-foreground transition-colors">
-            <Moon className="w-5 h-5" />
+          <button onClick={alternarTema} className="text-muted-foreground hover:text-foreground transition-colors">
+            {tema === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </button>
-
+ 
           {usuario ? (
             <DropdownMenu>
                 <DropdownMenuTrigger className="outline-none flex items-center gap-2 cursor-pointer">
