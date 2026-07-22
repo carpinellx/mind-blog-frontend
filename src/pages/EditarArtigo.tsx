@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, X } from 'lucide-react';
+import { ArrowLeft, X, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import {
@@ -29,6 +29,7 @@ export default function EditarArtigo() {
   const [tags, setTags] = useState<string[]>([]);
   const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const inputImagemRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function buscarArtigo() {
@@ -141,11 +142,20 @@ export default function EditarArtigo() {
         <div>
           <label className="text-sm font-medium block mb-1">Nova Imagem de Capa</label>
           <input
+            ref={inputImagemRef}
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={(e) => setImagem(e.target.files?.[0])}
-            className="text-sm"
+            className="hidden"
           />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => inputImagemRef.current?.click()}
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {imagem ? imagem.name : 'Escolher nova imagem'}
+          </Button>
           <p className="text-xs text-muted-foreground mt-1">Deixe em branco para manter a imagem atual.</p>
         </div>
 

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, X } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import {
@@ -27,6 +28,7 @@ export default function NovoArtigo() {
   const [tags, setTags] = useState<string[]>([]);
   const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const inputImagemRef = useRef<HTMLInputElement>(null);
 
   function adicionarTag() {
     const nomeTag = tagAtual.trim();
@@ -96,6 +98,7 @@ export default function NovoArtigo() {
             onChange={(e) => setResumo(e.target.value)}
             maxLength={300}
           />
+          <p className="text-xs text-muted-foreground mt-1">{resumo.length}/300 caracteres</p>
         </div>
 
         <div>
@@ -115,11 +118,20 @@ export default function NovoArtigo() {
         <div>
           <label className="text-sm font-medium block mb-1">Imagem de Capa</label>
           <input
+            ref={inputImagemRef}
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={(e) => setImagem(e.target.files?.[0])}
-            className="text-sm"
+            className="hidden"
           />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => inputImagemRef.current?.click()}
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {imagem ? imagem.name : 'Escolher imagem'}
+          </Button>
         </div>
 
         <div>
@@ -160,6 +172,9 @@ export default function NovoArtigo() {
             onChange={(e) => setConteudo(e.target.value)}
             required
           />
+          <p className="text-xs text-muted-foreground mt-1">
+            {conteudo.length} caracteres · {conteudo.trim() ? conteudo.trim().split(/\s+/).length : 0} palavras
+          </p>
         </div>
 
         {erro && <p className="text-sm text-destructive">{erro}</p>}
