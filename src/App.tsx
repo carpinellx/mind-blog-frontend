@@ -11,6 +11,7 @@ import RotaProtegida from './components/RotaProtegida';
 import NovoArtigo from './pages/NovoArtigo';
 import EditarArtigo from './pages/EditarArtigo';
 import Configuracoes from './pages/Configuracoes';
+import BotaoFlutuante from './components/BotaoFlutuante';
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
         />
       </Routes>
       <Footer />
+      <BotaoFlutuante />
     </>
   );
 }
