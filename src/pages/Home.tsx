@@ -24,8 +24,8 @@ export default function Home() {
     buscarDados();
   }, []);
 
-  const destaques = artigos.slice(0, 4);
-  const recentes = artigos.slice(0, 4);
+const destaques = [...artigos].sort((a, b) => b.total_curtidas - a.total_curtidas).slice(0, 3);
+const recentes = [...artigos].slice(0, 6);
 
   return (
     <div>
