@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Eye, Heart, MessageCircle, Trash2, Pencil } from 'lucide-react';import * as artigoService from '../services/artigoService';
 import type { Artigo, Comentario } from '../types';import { useAuth } from '../contexts/useAuth';
 import { Button } from '../components/ui/button';
@@ -16,8 +15,12 @@ export default function ArtigoDetalhe() {
   const [comentarios, setComentarios] = useState<Comentario[]>([]);
   const [novoComentario, setNovoComentario] = useState('');
   const [enviandoComentario, setEnviandoComentario] = useState(false);
+  const jaExecutou = useRef(false);
 
 useEffect(() => {
+  if (jaExecutou.current) return;
+  jaExecutou.current = true;
+
   async function buscarDados() {
     if (!id) return;
     try {
