@@ -23,6 +23,7 @@ export interface Artigo {
   data_atualizacao: string;
   tags: string[];
   total_curtidas: number;
+  curtido_pelo_usuario: boolean;
 }
 
 export interface Comentario {

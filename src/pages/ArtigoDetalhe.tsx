@@ -28,6 +28,7 @@ useEffect(() => {
       ]);
       setArtigo(dadosArtigo);
       setTotalCurtidas(dadosArtigo.total_curtidas);
+      setCurtido(dadosArtigo.curtido_pelo_usuario);
       setComentarios(dadosComentarios);
     } catch (erro) {
       console.error('Erro ao buscar artigo:', erro);
