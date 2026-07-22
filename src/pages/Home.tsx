@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import ArtigoCard from '../components/ArtigoCard';
 import * as artigoService from '../services/artigoService';
+import { useAuth } from '../contexts/useAuth';
 import type { Artigo } from '../types';
 
 export default function Home() {
+  const { usuario } = useAuth();
   const [artigos, setArtigos] = useState<Artigo[]>([]);
   const [carregando, setCarregando] = useState(true);
 
@@ -40,7 +42,7 @@ const recentes = [...artigos].slice(0, 6);
           <Link to="/artigos">
             <Button size="lg">Explorar Artigos</Button>
           </Link>
-          <Link to="/cadastro">
+          <Link to={usuario ? '/dashboard/novo-artigo' : '/cadastro'}>
             <Button size="lg" variant="outline">Começar a Escrever</Button>
           </Link>
         </div>
