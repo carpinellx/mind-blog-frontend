@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Dashboard from './pages/Dashboard';
 import RotaProtegida from './components/RotaProtegida';
+import NovoArtigo from './pages/NovoArtigo';
 
 function App() {
   return (
@@ -24,6 +25,14 @@ function App() {
           element={
             <RotaProtegida>
               <Dashboard />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="/dashboard/novo-artigo"
+          element={
+            <RotaProtegida>
+              <NovoArtigo />
             </RotaProtegida>
           }
         />
