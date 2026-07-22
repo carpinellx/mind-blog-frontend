@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Eye, Heart, MessageCircle, Trash2 } from 'lucide-react';
-import * as artigoService from '../services/artigoService';
+import { ArrowLeft, Clock, Eye, Heart, MessageCircle, Trash2, Pencil } from 'lucide-react';import * as artigoService from '../services/artigoService';
 import type { Artigo, Comentario } from '../types';import { useAuth } from '../contexts/useAuth';
 import { Button } from '../components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
@@ -123,6 +122,14 @@ async function handleExcluirComentario(comentarioId: number) {
           <Heart className={`w-4 h-4 mr-1 ${curtido ? 'fill-current' : ''}`} /> {totalCurtidas}
         </Button>
         {!usuario && <span className="text-xs text-muted-foreground">Faça login para curtir</span>}
+
+        {usuario?.id === artigo.autor_id && (
+          <Link to={`/dashboard/editar-artigo/${artigo.id}`}>
+            <Button variant="outline" size="sm">
+              <Pencil className="w-4 h-4 mr-1" /> Editar Artigo
+            </Button>
+          </Link>
+        )}
       </div>
 
       {urlImagem && (
