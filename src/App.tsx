@@ -9,6 +9,7 @@ import Cadastro from './pages/Cadastro';
 import Dashboard from './pages/Dashboard';
 import RotaProtegida from './components/RotaProtegida';
 import NovoArtigo from './pages/NovoArtigo';
+import EditarArtigo from './pages/EditarArtigo';
 
 function App() {
   return (
@@ -33,6 +34,14 @@ function App() {
           element={
             <RotaProtegida>
               <NovoArtigo />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="/dashboard/editar-artigo/:id"
+          element={
+            <RotaProtegida>
+              <EditarArtigo />
             </RotaProtegida>
           }
         />
