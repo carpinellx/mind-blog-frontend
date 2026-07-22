@@ -69,7 +69,7 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">Bem-vindo de volta, {usuario?.nome}!</p>
