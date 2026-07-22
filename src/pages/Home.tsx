@@ -110,8 +110,8 @@ const recentes = [...artigos].slice(0, 6);
         <p className="text-muted-foreground mb-6">
           Junte-se à nossa comunidade de escritores e compartilhe suas experiências e conhecimentos em tecnologia
         </p>
-        <Link to="/cadastro">
-          <Button size="lg">Criar Conta Gratuita</Button>
+        <Link to={usuario ? '/dashboard/novo-artigo' : '/cadastro'}>
+          <Button size="lg">{usuario ? 'Criar Novo Artigo' : 'Criar Conta Gratuita'}</Button>
         </Link>
       </section>
     </div>
