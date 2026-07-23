@@ -16,6 +16,7 @@ export default function ArtigoDetalhe() {
   const [novoComentario, setNovoComentario] = useState('');
   const [enviandoComentario, setEnviandoComentario] = useState(false);
   const jaExecutou = useRef(false);
+  const [erroImagem, setErroImagem] = useState(false);
 
 useEffect(() => {
   if (jaExecutou.current) return;
@@ -135,8 +136,8 @@ async function handleExcluirComentario(comentarioId: number) {
         )}
       </div>
 
-      {urlImagem && (
-        <img src={urlImagem} alt={artigo.titulo} className="w-full rounded-lg mb-6" />
+      {urlImagem && !erroImagem && (
+        <img src={urlImagem} alt={artigo.titulo} className="w-full rounded-lg mb-6" onError={() => setErroImagem(true)} />
       )}
 
       <div className="prose prose-invert max-w-none mb-8 whitespace-pre-line">

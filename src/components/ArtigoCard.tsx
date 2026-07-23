@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Clock, Eye, Heart } from 'lucide-react';
 import type { Artigo } from '../types';
+import { useState } from 'react';
 
 interface ArtigoCardProps {
   artigo: Artigo;
@@ -15,6 +16,7 @@ const CORES_PLACEHOLDER = [
 
 export default function ArtigoCard({ artigo, layout = 'grid' }: ArtigoCardProps) {
   const corPlaceholder = CORES_PLACEHOLDER[artigo.id % CORES_PLACEHOLDER.length];
+  const [erroImagem, setErroImagem] = useState(false);
   const urlImagem = artigo.imagem_banner
     ? `http://localhost:3333/uploads/${artigo.imagem_banner}`
     : null;
@@ -28,9 +30,9 @@ export default function ArtigoCard({ artigo, layout = 'grid' }: ArtigoCardProps)
   if (layout === 'lista') {
     return (
       <Link to={`/artigos/${artigo.id}`} className="group flex gap-4 border border-border rounded-lg p-4 hover:border-primary transition-colors">
-        <div className={`w-40 h-28 shrink-0 rounded-md overflow-hidden ${!urlImagem ? corPlaceholder : ''}`}>
-          {urlImagem && (
-            <img src={urlImagem} alt={artigo.titulo} className="w-full h-full object-cover" />
+        <div className={`w-40 h-28 shrink-0 rounded-md overflow-hidden ${!urlImagem || erroImagem ? corPlaceholder : ''}`}>
+          {urlImagem && !erroImagem && (
+            <img src={urlImagem} alt={artigo.titulo} className="w-full h-full object-cover" onError={() => setErroImagem(true)} />
           )}
         </div>
 
@@ -62,9 +64,9 @@ export default function ArtigoCard({ artigo, layout = 'grid' }: ArtigoCardProps)
 
   return (
     <Link to={`/artigos/${artigo.id}`} className="group block">
-      <div className={`h-40 rounded-t-lg overflow-hidden ${!urlImagem ? corPlaceholder : ''}`}>
-        {urlImagem && (
-          <img src={urlImagem} alt={artigo.titulo} className="w-full h-full object-cover" />
+      <div className={`h-40 rounded-t-lg overflow-hidden ${!urlImagem || erroImagem ? corPlaceholder : ''}`}>
+        {urlImagem && !erroImagem && (
+          <img src={urlImagem} alt={artigo.titulo} className="w-full h-full object-cover" onError={() => setErroImagem(true)} />
         )}
       </div>
 
